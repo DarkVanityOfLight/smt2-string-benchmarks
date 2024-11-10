@@ -1,10 +1,7 @@
-from concurrent.futures import ProcessPoolExecutor
 import subprocess
 import os
-import pathlib
-import queue
 import threading
-from typing import Tuple, List
+from typing import List
 from typing import Iterator
 
 solvers = {
@@ -53,7 +50,7 @@ def benchmark_solver(solver_name: str, solver_command: List[str], input_file: st
             out = subprocess.run(perf_command, timeout=TIMEOUT, capture_output=True)
             f.write(f"{out.returncode}\n{out.stdout.decode('utf-8')}\n{out.stderr.decode('utf-8')}\n")
         except subprocess.TimeoutExpired:
-            f.write(f"timeout")
+            f.write("timeout")
 
 
 def worker(solver_name: str, pool: LazyPathIterator):
