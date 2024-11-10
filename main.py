@@ -30,14 +30,14 @@ class LazyPathIterator:
                     yield os.path.join(root, f)
 
 
-def benchmark_solver(solver_name: str, solver_command: List[str], input_file: str) -> str:
+def benchmark_solver(solver_name: str, solver_command: List[str], input_file: str):
     """
     Runs a benchmark on a single file with a single solver
     param: input_file The full path of the input file
     """
 
     with open(f"{solver_name}.log", "a") as f:
-        f.write(f"{input_file}\n")
+        f.write(f"Benchmarking: {input_file}\n")
 
     output = os.path.join(OUTPUT_DIR, f"{os.path.splitext(input_file)[0]}_{solver_name}.out")
 
@@ -45,12 +45,18 @@ def benchmark_solver(solver_name: str, solver_command: List[str], input_file: st
 
     perf_command = ["perf", "stat", *solver_command, input_file]
 
-    with open(output, "w+") as f:
-        try:
-            out = subprocess.run(perf_command, timeout=TIMEOUT, capture_output=True)
-            f.write(f"{out.returncode}\n{out.stdout.decode('utf-8')}\n{out.stderr.decode('utf-8')}\n")
-        except subprocess.TimeoutExpired:
-            f.write("timeout")
+    try:
+        with open(output, "w+") as f:
+            try:
+                out = subprocess.run(perf_command, timeout=TIMEOUT, capture_output=True)
+                f.write(f"{out.returncode}\n{out.stdout.decode('utf-8')}\n{out.stderr.decode('utf-8')}\n")
+            except subprocess.TimeoutExpired:
+                f.write("timeout")
+
+            except Exception as e:
+                f.write(f"3\n{e}\n")  # Error code 3
+    except Exception as e:
+        print(f"Error writing to output file {output}: {e}")
 
 
 def worker(solver_name: str, pool: LazyPathIterator):
