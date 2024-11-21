@@ -9,6 +9,8 @@ import sys
 animation = ["[■□□□□□□□□□]", "[■■□□□□□□□□]", "[■■■□□□□□□□]", "[■■■■□□□□□□]", "[■■■■■□□□□□]", "[■■■■■■□□□□]", "[■■■■■■■□□□]", "[■■■■■■■■□□]", "[■■■■■■■■■□]", "[■■■■■■■■■■]"]
 
 TIMEOUT_STRING = "timeout"
+OSTRICH_TIMEOUT_STRING = "unknown"
+CVC5_TIMEOUT_STRING = "cvc5 interrupted by timeout."
 PERF_START_STRING = "Performance counter stats for "
 
 type Timeout = "Timeout"
@@ -24,7 +26,8 @@ def parse_file(path: str):
         content = f.readlines()
         stripped_content = clean_lines(content)
 
-        if TIMEOUT_STRING in stripped_content[0]:
+        # First is a hard timeout by the script, the others indicate a clean timeout by the parser
+        if TIMEOUT_STRING in stripped_content[0] or TIMEOUT_STRING in stripped_content[1] or CVC5_TIMEOUT_STRING in stripped_content[1] or OSTRICH_TIMEOUT_STRING in stripped_content[1]:
             return (1, Timeout)
 
         exit_code = int(stripped_content[0])
@@ -87,11 +90,9 @@ def parse_files(files):
 
         # Problem name is everything except the last part
         problem_name = '_'.join(name_parts[:-1])
-        # Get the last directory of the file path
-        last_directory = os.path.basename(os.path.dirname(file))
 
         # Prepend the last directory to the problem name
-        problem_name = f"{last_directory}_{problem_name}"
+        problem_name = f"{os.path.dirname(file)}/{problem_name}"
 
         # Solver name is the last part
         solver_name = name_parts[-1]
