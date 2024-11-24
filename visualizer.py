@@ -100,6 +100,20 @@ def full_heatmap(data_frame):
     plt.tight_layout()
 
 
+def scatter(df):
+    plt.figure(figsize=(10, 6))
+    for solver in df['solver'].unique():
+        subset = df[df['solver'] == solver]
+        plt.scatter(subset['problem'], subset['task-clock:u'], label=solver)
+
+    plt.xlabel('Problem')
+    plt.ylabel('Elapsed Time')
+    plt.title('Elapsed Time per Problem by Solver')
+    plt.legend()
+    plt.xticks([])  # Rotate x-axis labels if they overlap
+    plt.show()
+
+
 if __name__ == "__main__":
     import dataparser
 
