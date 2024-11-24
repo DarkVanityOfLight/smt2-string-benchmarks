@@ -72,6 +72,34 @@ def total_time(df):
     print(task_clock_sum)
 
 
+def full_heatmap(data_frame):
+    pivot_df = data_frame.pivot(index='problem', columns='solver', values='task-clock:u')
+
+    bad_color = 'purple'
+    cmap = sns.color_palette("crest", as_cmap=True)
+    cmap.set_bad(bad_color)
+
+    plt.figure(figsize=(12, 8))
+    sns.heatmap(
+        pivot_df,
+        annot=False,
+        fmt=".2f",
+        cbar_kws={'label': 'task-clock:u'},
+        norm=LogNorm(),
+        cmap=cmap
+    )
+
+    # Title and labels
+    plt.title('Task Clock Time by Problem and Solver')
+    plt.xlabel('Solver')
+    plt.ylabel('Problem')
+
+    plt.yticks([])
+    plt.xticks()
+
+    plt.tight_layout()
+
+
 if __name__ == "__main__":
     import dataparser
 
