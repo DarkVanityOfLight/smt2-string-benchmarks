@@ -22,30 +22,34 @@ def clean_lines(text):
 
 def parse_file(path: str):
 
-    with open(path, "r") as f:
-        content = f.readlines()
-        stripped_content = clean_lines(content)
+    try:
+        with open(path, "r") as f:
+            content = f.readlines()
+            stripped_content = clean_lines(content)
 
-        # First is a hard timeout by the script, the others indicate a clean timeout by the parser
-        if TIMEOUT_STRING in stripped_content[0] or TIMEOUT_STRING in stripped_content[1] or CVC5_TIMEOUT_STRING in stripped_content[1] or OSTRICH_TIMEOUT_STRING in stripped_content[1]:
-            return (1, Timeout)
+            # First is a hard timeout by the script, the others indicate a clean timeout by the parser
+            if TIMEOUT_STRING in stripped_content[0] or TIMEOUT_STRING in stripped_content[1] or CVC5_TIMEOUT_STRING in stripped_content[1] or OSTRICH_TIMEOUT_STRING in stripped_content[1]:
+                return (1, Timeout)
 
-        exit_code = int(stripped_content[0])
+            exit_code = int(stripped_content[0])
 
-        if exit_code == 0:
-            sat = stripped_content[1]  # Sat or unsat
-        else:
-            return (exit_code, "Error")
+            if exit_code == 0:
+                sat = stripped_content[1]  # Sat or unsat
+            else:
+                return (exit_code, "Error")
 
-        perf_index = next((i for i, s in enumerate(stripped_content) if PERF_START_STRING in s), None)
+            perf_index = next((i for i, s in enumerate(stripped_content) if PERF_START_STRING in s), None)
 
-        if perf_index:
-            perf_stats_string = stripped_content[perf_index:]
-            additional_info = stripped_content[1:perf_index - 1]
+            if perf_index:
+                perf_stats_string = stripped_content[perf_index:]
+                additional_info = stripped_content[1:perf_index - 1]
 
-            return (exit_code, sat, perf_stats_string, additional_info)
-        else:
-            print(f"Error parsing file: {path}")
+                return (exit_code, sat, perf_stats_string, additional_info)
+            else:
+                print(f"Error parsing file: {path}")
+    except Exception as e:
+        print(f"Error {e} while parsing file {path}")
+        return (3, "Error")
 
 
 def parse_perf_stats(stats: List[str]):
@@ -117,7 +121,7 @@ def parse_files(files):
 
 
 def main():
-    files = [str(file) for file in Path("out").rglob("*.out")]
+    files = [str(file) for file in Path("out/benchmarks/non-incremental/QF_SLIA/").rglob("*.out")]
     df = parse_files(files)
 
     return df
@@ -125,4 +129,4 @@ def main():
 
 if __name__ == "__main__":
     df = main()
-    df.to_csv("QF_S_PARSED.csv")
+    df.to_csv("QF_SLIA_PARSED.csv")
