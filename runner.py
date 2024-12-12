@@ -93,13 +93,13 @@ def run(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run smt solvers on a given benchmark set")
-    parser.add_argument("path", type=str, help="Path to the directory containing the benchmarks")
     parser.add_argument("--skip", type=int, default=0, help="Number of benchmark files to skip")
     parser.add_argument("--solvers",
                         type=str,
                         nargs="+",
                         default=["ostrich", "z3alpha", "z3noodler", "cvc5", "z3"],
                         help="A list of string solvers to run the benchmark with, available solvers are: ostrich, z3alpha, z3noodler, cvc5, z3")
+    parser.add_argument("path", type=str, help="Path to the directory containing the benchmarks")
     args = parser.parse_args()
 
     run(args)
