@@ -135,6 +135,41 @@ def summary_table(df):
     print(result)
 
 
+def cactus_plot(df):
+    cleaned = df[df["status"] == "Success"]
+
+    # Pivot the dataframe to have 'solver' as columns and 'problem' as rows
+    pivot_df = cleaned.pivot(index='problem', columns='solver', values='task-clock:u')
+
+    # Create the plot
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    for solver in pivot_df.columns:
+        sorted_data = pivot_df[solver].dropna().sort_values()
+        cumulative = range(1, len(sorted_data) + 1)
+
+        # Step plot
+        ax.step(cumulative, sorted_data, where='post', label=solver)
+
+        # Plot points at each step
+        # step_indices = range(0, len(sorted_data), 10)  # Every 10th problem
+        # ax.scatter(sorted_data.iloc[step_indices], [cumulative[i] for i in step_indices],
+        #            s=10, color='black', zorder=3)
+
+    # ax.set_xscale('log')
+    ax.set_yscale('log')
+
+    # Labels and title
+    ax.set_ylabel('Task Clock (u)')
+    ax.set_xlabel('Problem Count')
+    ax.set_title('Cactus Plot: Task Completion Times by Solver')
+    ax.legend(title='Solvers')
+    ax.grid(True)
+
+    # Return the figure
+    return fig
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Print and/or visualize stats gathered by the dataparser")
     parser.add_argument("path", type=str, help="Path to the csv containing the results")
@@ -157,11 +192,12 @@ if __name__ == "__main__":
         figures.append(full_heatmap(df))
 
     if args.cactus:
-        pass
+        figures.append(cactus_plot(df))
 
     if args.scatter:
         figures.append(scatter(df))
 
+    print("[+] Showing graphs")
     plt.show()
 
     if args.save_graphs:
