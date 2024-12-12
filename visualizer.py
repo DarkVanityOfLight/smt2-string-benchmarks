@@ -50,26 +50,32 @@ def visualize_runtime(df):
 
 
 def count_timeouts(df):
-    print("Timeouts:\n")
     timeout_counts = df[df['status'] == 'Timeout'].groupby('solver').size()
-    print(timeout_counts)
+    if timeout_counts.empty:
+        print("Timeouts: 0")
+    else:
+        print("Timeouts:")
+        print(timeout_counts.to_string(index=True))
 
 
 def count_errors(df):
-    print("Errors:\n")
-    timeout_counts = df[df['status'] == 'Error'].groupby('solver').size()
-    print(timeout_counts)
+    error_counts = df[df['status'] == 'Error'].groupby('solver').size()
+    if error_counts.empty:
+        print("Errors: 0")
+    else:
+        print("Errors:")
+        print(error_counts.to_string(index=True))
 
 
 def total_time(df):
     # Convert 'task-clock:u' to float
-    print("Total time used")
+    print("Total time used(in ms user time):")
     df['task-clock:u'] = df['task-clock:u'].astype(float)
 
     # Group by 'solver' and sum 'task-clock:u'
     task_clock_sum = df.groupby('solver')['task-clock:u'].sum()
 
-    print(task_clock_sum)
+    print(task_clock_sum.to_string(index=True))
 
 
 def full_heatmap(data_frame):
@@ -115,10 +121,10 @@ def scatter(df):
 
 
 if __name__ == "__main__":
-    import dataparser
-
-    df = dataparser.main()
-    visualize_runtime(df)
+    df = pd.read_csv("QF_S_PARSED.csv")
+    # visualize_runtime(df)
     count_timeouts(df)
+    print("")
     count_errors(df)
+    print("")
     total_time(df)
