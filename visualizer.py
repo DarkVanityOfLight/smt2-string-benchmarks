@@ -164,5 +164,6 @@ if __name__ == "__main__":
 
     plt.show()
 
-    for i, fig in enumerate(figures):
-        fig.savefig(f"plot_{i}.png")
+    if args.save_graphs:
+        for i, fig in enumerate(figures):
+            fig.savefig(f"plot_{i}.png")
