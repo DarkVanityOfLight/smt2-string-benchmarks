@@ -100,6 +100,6 @@ if __name__ == "__main__":
                         nargs="+",
                         default=["ostrich", "z3alpha", "z3noodler", "cvc5", "z3"],
                         help="A list of string solvers to run the benchmark with, available solvers are: ostrich, z3alpha, z3noodler, cvc5, z3")
-    args = argparse.parse_args
+    args = parser.parse_args()
 
     run(args)
