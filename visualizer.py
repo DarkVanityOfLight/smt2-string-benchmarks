@@ -1,13 +1,10 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-import numpy as np
 import seaborn as sns
-from matplotlib.colors import LogNorm, Normalize
+from matplotlib.colors import LogNorm
+import argparse
 
 import matplotlib
-matplotlib.use('qtagg')
-
-# pd.set_option("display.max_rows", None)
 
 
 def visualize_runtime(df):
@@ -85,39 +82,47 @@ def full_heatmap(data_frame):
     cmap = sns.color_palette("crest", as_cmap=True)
     cmap.set_bad(bad_color)
 
-    plt.figure(figsize=(12, 8))
+    # Create the figure and the heatmap
+    fig, ax = plt.subplots(figsize=(12, 8))
     sns.heatmap(
         pivot_df,
         annot=False,
         fmt=".2f",
         cbar_kws={'label': 'task-clock:u'},
         norm=LogNorm(),
-        cmap=cmap
+        cmap=cmap,
+        ax=ax
     )
 
     # Title and labels
-    plt.title('Task Clock Time by Problem and Solver')
-    plt.xlabel('Solver')
-    plt.ylabel('Problem')
+    ax.set_title('Task Clock Time by Problem and Solver')
+    ax.set_xlabel('Solver')
+    ax.set_ylabel('Problem')
 
-    plt.yticks([])
-    plt.xticks()
+    ax.set_yticks([])  # Hide y ticks
+    ax.set_xticks([])  # You can adjust which ticks to display
 
     plt.tight_layout()
 
+    return fig  # Return the figure object
+
 
 def scatter(df):
-    plt.figure(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    # Plot each solver's data
     for solver in df['solver'].unique():
         subset = df[df['solver'] == solver]
-        plt.scatter(subset['problem'], subset['task-clock:u'], label=solver)
+        ax.scatter(subset['problem'], subset['task-clock:u'], label=solver)
 
-    plt.xlabel('Problem')
-    plt.ylabel('Elapsed Time')
-    plt.title('Elapsed Time per Problem by Solver')
-    plt.legend()
-    plt.xticks([])  # Rotate x-axis labels if they overlap
-    plt.show()
+    ax.set_xlabel('Problem')
+    ax.set_ylabel('Elapsed Time')
+    ax.set_title('Elapsed Time per Problem by Solver')
+    ax.legend()
+    ax.set_xticks([])
+
+    # Return the figure object
+    return fig
 
 
 def summary_table(df):
@@ -131,6 +136,30 @@ def summary_table(df):
 
 
 if __name__ == "__main__":
-    df = pd.read_csv("QF_S_PARSED.csv")
-    # visualize_runtime(df)
-    summary_table(df)
+    parser = argparse.ArgumentParser(description="Print and/or visualize stats gathered by the dataparser")
+    parser.add_argument("path", type=str, help="Path to the csv containing the results")
+    parser.add_argument("--heatmap", action="store_true", help="Enable heatmap visualization")
+    parser.add_argument("--cactus", action="store_true", help="Enable cactus chart visualization")
+    parser.add_argument("--scatter", action="store_true", help="Enable scatter chart visualization")
+    parser.add_argument("--table", action="store_true", help="Enable a summary table visualization")
+    parser.add_argument("--mpl", type=str, default="qtagg", help="The matplotlib backend to use, default is qtagg")
+    parser.add_argument("--save-graphs", action="store_true", help="If the generated plots are to be saved")
+    args = parser.parse_args()
+
+    df = pd.read_csv(args.path)
+    matplotlib.use(args.mpl)
+
+    if args.table:
+        summary_table(df)
+
+    figures = []
+    if args.heatmap:
+        figures.append(full_heatmap(df))
+
+    if args.cactus:
+        pass
+
+    if args.scatter:
+        figures.append(scatter(df))
+
+    plt.show()
