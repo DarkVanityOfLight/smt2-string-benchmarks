@@ -5,11 +5,11 @@ analyze several SMT solvers over the theory of strings.
 
 ## Solvers
 Current supported solvers contain:
-  - (z3)[https://github.com/Z3Prover/z3]
-  - (z3-noodler)[https://github.com/VeriFIT/z3-noodler]
-  - (z3-alpha)[https://github.com/JohnLyu2/z3alpha](with a modified startup scripts)
-  - (cvc5)[https://github.com/cvc5/cvc5]
-  - (ostrich)[https://github.com/uuverifiers/ostrich]
+  - [z3](https://github.com/Z3Prover/z3)
+  - [z3-noodler](https://github.com/VeriFIT/z3-noodler)
+  - [z3-alpha](https://github.com/JohnLyu2/z3alpha)(with a modified startup scripts)
+  - [cvc5](https://github.com/cvc5/cvc5)
+  - [ostrich](https://github.com/uuverifiers/ostrich)
 
 ## The runner
 This script is used to run several solvers in parallel and measure their runtime using `perf`.
@@ -19,7 +19,7 @@ Before running you should adjust your paths to the solvers in the script.
 For options check `python3 runner.py --help`.
 
 > Note:
-> When using the --solver argument make sure to put a -- as delimiter between it and the next arguemnt.
+> When using the --solver argument make sure to put a -- as delimiter between it and the next argumnet.
 > Eg. `python3 runner.py --solvers ostrich -- benchmarks/non-incremental/QF_SLIA`
 
 ## The dataparser
@@ -52,7 +52,8 @@ and adjusted the path for each solver in the script.
 The dataparser requires pandas.
 
 ### Visualizer
-The visualizer requires pandas and matplotlib.
+The visualizer requires pandas and matplotlib and seaborn.
+Additionally make sure you have a compatible backend for matplotlib installed.
 
 ### Benchmarking
 The generall procces of benchmarking would look something like this:
