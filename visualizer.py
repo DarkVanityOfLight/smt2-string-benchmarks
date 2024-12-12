@@ -143,7 +143,7 @@ if __name__ == "__main__":
     parser.add_argument("--scatter", action="store_true", help="Enable scatter chart visualization")
     parser.add_argument("--table", action="store_true", help="Enable a summary table visualization")
     parser.add_argument("--mpl", type=str, default="qtagg", help="The matplotlib backend to use, default is qtagg")
-    parser.add_argument("--save-graphs", action="store_true", help="If the generated plots are to be saved")
+    parser.add_argument("--save_graphs", action="store_true", help="If the generated plots are to be saved")
     args = parser.parse_args()
 
     df = pd.read_csv(args.path)
@@ -163,3 +163,6 @@ if __name__ == "__main__":
         figures.append(scatter(df))
 
     plt.show()
+
+    for i, fig in enumerate(figures):
+        fig.savefig(f"plot_{i}.png")
