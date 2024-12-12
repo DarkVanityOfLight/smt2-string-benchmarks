@@ -120,11 +120,17 @@ def scatter(df):
     plt.show()
 
 
+def summary_table(df):
+    result = df.groupby('solver').agg(
+        success_count=('status', lambda x: (x == 'Success').sum()),
+        timeout_count=('status', lambda x: (x == 'Timeout').sum()),
+        error_count=('status', lambda x: (x == "Error").sum()),
+        total_task_clock=('task-clock:u', 'sum')
+    ).reset_index()
+    print(result)
+
+
 if __name__ == "__main__":
     df = pd.read_csv("QF_S_PARSED.csv")
     # visualize_runtime(df)
-    count_timeouts(df)
-    print("")
-    count_errors(df)
-    print("")
-    total_time(df)
+    summary_table(df)
