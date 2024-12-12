@@ -8,12 +8,8 @@ matplotlib = "*"
 numpy = "*"
 pandas = "*"
 ipython = "*"
-ptpython = "*"
 seaborn = "*"
-pyqt5 = "*"
 pyqt6 = "*"
-jupyterlab = "*"
-catppuccin-jupyterlab = "*"
 ipympl = "*"
 
 [dev-packages]
