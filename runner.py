@@ -3,6 +3,7 @@ import os
 import threading
 from typing import List
 from typing import Iterator
+import argparse
 
 solvers = {
     "cvc5": ["/home/lichtner/cvc5", "--tlimit", "60000"],
@@ -75,9 +76,9 @@ def worker(solver_name: str, pool: LazyPathIterator):
             print(f"Some Exception occured: {e}")
 
 
-def run(path):
-    solvers = ["cvc5", "ostrich", "z3noodler", "z3alpha", "z3"]
-    pools = [LazyPathIterator(path) for _ in solvers]
+def run(args):
+    solvers = args.solvers
+    pools = [LazyPathIterator(args.path, args.skip) for _ in solvers]
 
     threads = []
     for solver, pool in zip(solvers, pools):
@@ -91,4 +92,14 @@ def run(path):
 
 
 if __name__ == "__main__":
-    run("benchmarks/non-incremental/QF_SLIA")
+    parser = argparse.ArgumentParser(description="Run smt solvers on a given benchmark set")
+    parser.add_argument("path", type=str, help="Path to the directory containing the benchmarks")
+    parser.add_argument("--skip", type=int, default=0, help="Number of benchmark files to skip")
+    parser.add_argument("--solvers",
+                        type=str,
+                        nargs="+",
+                        default=["ostrich", "z3alpha", "z3noodler", "cvc5", "z3"],
+                        help="A list of string solvers to run the benchmark with, available solvers are: ostrich, z3alpha, z3noodler, cvc5, z3")
+    args = argparse.parse_args
+
+    run(args)
