@@ -8,7 +8,8 @@ solvers = {
     "cvc5": ["/home/lichtner/cvc5", "--tlimit", "60000"],
     "ostrich": ["/home/lichtner/ostrich/ostrich", "-logo", "-runtime", "+quiet", "-timeout=60000"],
     "z3alpha": ["/software/python/3.12.0/bin/python3.12", "/home/lichtner/z3alpha/smtcomp24/z3alpha.py", "-T:60"],
-    "z3noodler": ["/home/lichtner/z3-noodler", "-T:60"]
+    "z3noodler": ["/home/lichtner/z3-noodler", "-T:60"],
+    "z3": ["/home/lichtner/.local/bin/z3", "-T:60"]
 }
 
 OUTPUT_DIR = "out"
@@ -48,7 +49,7 @@ def benchmark_solver(solver_name: str, solver_command: List[str], input_file: st
                 out = subprocess.run(perf_command, timeout=TIMEOUT, capture_output=True)
                 f.write(f"{out.returncode}\n{out.stdout.decode('utf-8')}\n{out.stderr.decode('utf-8')}\n")
             except subprocess.TimeoutExpired:
-                f.write("timeout")
+                f.write("hardtimeout")
 
             except Exception as e:
                 f.write(f"3\n{e}\n")  # Error code 3
@@ -67,7 +68,7 @@ def worker(solver_name: str, pool: LazyPathIterator):
 
 
 def run(path):
-    solvers = ["cvc5", "ostrich", "z3noodler", "z3alpha"]
+    solvers = ["cvc5", "ostrich", "z3noodler", "z3alpha", "z3"]
     pools = [LazyPathIterator(path) for _ in solvers]
 
     threads = []
@@ -82,4 +83,4 @@ def run(path):
 
 
 if __name__ == "__main__":
-    run("benchmarks/non-incremental")
+    run("benchmarks/non-incremental/QF_SLIA")
