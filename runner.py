@@ -18,16 +18,24 @@ TIMEOUT = 70  # Timeout in seconds, Give the solvers 10 seconds to clean up
 
 
 class LazyPathIterator:
-    def __init__(self, path: str):
+    def __init__(self, path: str, skip: int = 0):
         self.path = path
+        self.skip = skip
 
     def __iter__(self) -> Iterator[str]:
+
+        count = 0
+
         # Walk through each directory and subdirectory
         for root, _, files in os.walk(self.path):
 
             # Yield only files ending with .smt2
             for f in files:
                 if f.endswith(".smt2"):
+                    if count <= self.skip:
+                        count += 1
+                        continue
+
                     yield os.path.join(root, f)
 
 
