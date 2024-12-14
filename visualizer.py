@@ -93,7 +93,7 @@ def summary_table(df):
         error_count=('status', lambda x: (x == "Error").sum()),
         total_task_clock=('task-clock:u', 'sum')
     ).reset_index()
-    print(result)
+    return result
 
 
 def cactus_plot(df):
@@ -145,7 +145,7 @@ if __name__ == "__main__":
     matplotlib.use(args.mpl)
 
     if args.table:
-        summary_table(df)
+        print(summary_table(df))
 
     figures = []
     if args.heatmap:
