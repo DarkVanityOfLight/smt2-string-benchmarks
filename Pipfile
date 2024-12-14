@@ -4,13 +4,15 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-matplotlib = "*"
 numpy = "*"
 pandas = "*"
 ipython = "*"
 seaborn = "*"
 pyqt6 = "*"
 ipympl = "*"
+matplotlib = "*"
+jupyterlab = "*"
+catppuccin-jupyterlab = "*"
 
 [dev-packages]
 
