@@ -7,45 +7,6 @@ import argparse
 import matplotlib
 
 
-def visualize_runtime(df):
-
-    # Pivot the data for easier plotting
-    print("[+]Pivoting data")
-    pivot_df = df.pivot(index='problem', columns='solver', values='task-clock:u')
-
-    print("[+]Filling NaN")
-    pivot_df = pivot_df.fillna(0)
-    print("[+]Converting to float")
-    pivot_df = pivot_df.astype({col: float for col in pivot_df.columns})
-
-    # pivot_df = pivot_df.head(1000)
-    # Plotting
-    print("[+]Plot")
-    plt.figure(figsize=(12, 8))
-    sns.heatmap(
-        pivot_df,
-        cmap="YlGnBu",
-        annot=False,
-        fmt=".2f",
-        cbar_kws={'label': 'Task Clock Time (msecs)'},
-        norm=LogNorm()
-    )
-
-    # Title and labels
-    plt.title('Task Clock Time by Problem and Solver')
-    plt.xlabel('Solver')
-    plt.ylabel('Problem')
-
-    plt.yticks([])
-
-    # Adjust layout to fit the plot
-    plt.tight_layout()
-
-    # Save the plot
-    print("[+] Saving")
-    plt.savefig('heatmap_plot.png', bbox_inches='tight')
-
-
 def count_timeouts(df):
     timeout_counts = df[df['status'] == 'Timeout'].groupby('solver').size()
     if timeout_counts.empty:
@@ -100,7 +61,7 @@ def full_heatmap(data_frame):
     ax.set_ylabel('Problem')
 
     ax.set_yticks([])  # Hide y ticks
-    ax.set_xticks([])  # You can adjust which ticks to display
+    # ax.set_xticks([])  # You can adjust which ticks to display
 
     plt.tight_layout()
 
@@ -166,7 +127,6 @@ def cactus_plot(df):
     ax.legend(title='Solvers')
     ax.grid(True)
 
-    # Return the figure
     return fig
 
 
