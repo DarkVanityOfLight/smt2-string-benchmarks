@@ -28,7 +28,6 @@ def count_errors(df):
 def total_time(df):
     # Convert 'task-clock:u' to float
     print("Total time used(in ms user time):")
-    df['task-clock:u'] = df['task-clock:u'].astype(float)
 
     # Group by 'solver' and sum 'task-clock:u'
     task_clock_sum = df.groupby('solver')['task-clock:u'].sum()
@@ -61,11 +60,10 @@ def full_heatmap(data_frame):
     ax.set_ylabel('Problem')
 
     ax.set_yticks([])  # Hide y ticks
-    # ax.set_xticks([])  # You can adjust which ticks to display
 
     plt.tight_layout()
 
-    return fig  # Return the figure object
+    return fig
 
 
 def scatter(df):

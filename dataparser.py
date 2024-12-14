@@ -20,6 +20,7 @@ def clean_lines(text):
 
 def parse_file(path: str):
 
+    # This is a bit messy but what can you do
     try:
         with open(path, "r") as f:
             content = f.readlines()
@@ -58,7 +59,7 @@ def parse_perf_stats(stats: List[str]):
         if not parts:
             continue
 
-        value, key = parts.rsplit(maxsplit=1)  # Split value from the key
+        value, key = parts.rsplit(maxsplit=1)
         if value.count('.') > 1:
             parts = value.split('.')
             value = "".join(parts[0:-1]) + "." + parts[-1]
@@ -93,7 +94,7 @@ def parse_files(files):
         # Problem name is everything except the last part
         problem_name = '_'.join(name_parts[:-1])
 
-        # Prepend the last directory to the problem name
+        # Prepend the directory to the problem name
         problem_name = f"{os.path.dirname(file)}/{problem_name}"
 
         # Solver name is the last part
