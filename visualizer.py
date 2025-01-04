@@ -105,10 +105,10 @@ def cactus_plot(df):
 
     for solver in pivot_df.columns:
         sorted_data = pivot_df[solver].dropna().sort_values()
-        cumulative = range(1, len(sorted_data) + 1)
+        cumulative = range(0, len(sorted_data) + 1)
 
         # Step plot
-        ax.step(cumulative, sorted_data, where='post', label=solver)
+        ax.step(cumulative, [0] + sorted_data.tolist(), where='post', label=solver)
 
         # Plot points at each step
         # step_indices = range(0, len(sorted_data), 10)  # Every 10th problem
