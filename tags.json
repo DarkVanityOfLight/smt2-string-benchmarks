@@ -1,0 +1,7 @@
+//Example file
+{
+  "add": ["tag1", "tag2"], // Add tags to files inherit files from topdir
+  "customize": [
+    { "filepath": ["tag3"] } // Fully overwrite all tags for custom files
+  ]
+}
