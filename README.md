@@ -61,3 +61,11 @@ The generall procces of benchmarking would look something like this:
 - Run the script, eg. `python3 runner.py benchmarks/non-incremental/QF_S`
 - Run the dataparser, eg. `python3 dataparser.py out/benchmarks/non-incremental/QF_S QF_S.csv`
 - Run the visualizer, eg. `python3 visualizer.py --cactus --table --heatmap QF_S.csv`
+
+### Tagging
+Tags can be generated using the tag_util and the originial smt2 dataset.
+Assume the originial problem set is in `benchmarks`
+- Add `tags.json` files to indicate tags on files/folders
+- Run the tag_util using `python3 tag_util.py --cut 1 --remove-filetype benchmarks/ TAGS`
+
+> This requires the pandas package
