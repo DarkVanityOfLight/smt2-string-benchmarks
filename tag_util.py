@@ -2,6 +2,7 @@ import os
 from typing import Dict, List, Set, Tuple
 import json
 import pandas as pd
+import argparse
 
 
 def parse_tagfile(file_path: str, directory: str, base_tags: Set[str]) -> Tuple[Dict[str, [List[str]]], Set[str]]:
