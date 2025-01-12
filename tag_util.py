@@ -147,6 +147,19 @@ def find_exact_tagset(df, TAGS, tagset):
     # Filter the original dataframe for these problems
     return df[df['problem'].isin(matching_problems)]
 
+
+def get_unique_tagsets(TAGS):
+    # Group by 'problem' and collect unique tags as sets
+    problem_to_tags = (
+        TAGS.groupby("problem")["tags"]
+        .apply(set)  # Get unique tags as a set for each problem
+    )
+    
+    # Extract unique tagsets
+    unique_tagsets = problem_to_tags.drop_duplicates().tolist()
+    
+    return unique_tagsets
+
 if __name__ == "__main__":
 
 
