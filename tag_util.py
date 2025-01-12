@@ -122,16 +122,29 @@ def clean_df(df, cut=2, remove_filetype=True, column="problem"):
 def find_having_tags(df, TAGS, tagset):
     filtered_tags = TAGS[TAGS['tags'].isin(list(tagset))]
     
-    # Step 2: Group by 'problem' and find problems with both tags
+    # Group by 'problem' and find problems with both tags
     problems_with_both_tags = (
         filtered_tags.groupby("problem")["tags"]
         .apply(set)  # Get unique tags for each problem
         .apply(lambda t: tagset.issubset(t))  # Check if both tags are present
     )
     
-    # Step 3: Get problems that satisfy the condition
+    # Get problems that satisfy the condition
     matching_problems = problems_with_both_tags[problems_with_both_tags].index
     
+    return df[df['problem'].isin(matching_problems)]
+
+def find_exact_tagset(df, TAGS, tagset):
+    # Group by 'problem' and collect unique tags for each problem
+    problem_to_tags = (
+        TAGS.groupby("problem")["tags"]
+        .apply(set)  # Get unique tags as a set for each problem
+    )
+    
+    # Find problems where the tags exactly match the given tagset
+    matching_problems = problem_to_tags[problem_to_tags == tagset].index
+    
+    # Filter the original dataframe for these problems
     return df[df['problem'].isin(matching_problems)]
 
 if __name__ == "__main__":
