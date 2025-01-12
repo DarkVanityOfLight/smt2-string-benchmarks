@@ -28,6 +28,10 @@ easy to use pandas dataframe that is saved as csv.
 There could(?) arise some issues on windows machines.
 For options check `python3 dataparser.py --help`
 
+Tags can be generated using the dataparser in tag mode and the originial smt2 dataset.
+Assume the originial problem set is in `benchmarks`
+- Add `tags.json` files to indicate tags on files/folders
+
 ## The visualizer
 The visualizer takes in a parsed dataset(in csv form), and can generate 
 several informations about the dataset. 
@@ -39,11 +43,6 @@ Supported are:
 
 For checking how to use run:
 `python3 dataparser.py --help`
-
-### Tagging
-Tags can be generated using the tag_util and the originial smt2 dataset.
-Assume the originial problem set is in `benchmarks`
-- Add `tags.json` files to indicate tags on files/folders
 
 ## Requirments
 Each script is written using python 3.12, other versions might still work.
