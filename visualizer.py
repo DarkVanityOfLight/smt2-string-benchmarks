@@ -127,6 +127,40 @@ def cactus_plot(df):
 
     return fig
 
+def sum_time_barchart(data_frame):
+    # Group the data by 'solver' and calculate the sum of 'task-clock:u'
+    summed_data = data_frame.groupby('solver')['task-clock:u'].sum().sort_values(ascending=False)
+
+    # Create the figure and the bar chart
+    fig, ax = plt.subplots(figsize=(10, 6))
+    bars = summed_data.plot(kind='bar', color='skyblue', ax=ax)
+
+    ax.set_yscale("log")
+
+    for bar, value in zip(bars.patches, summed_data):
+        ax.text(
+            bar.get_x() + bar.get_width() / 2,  # Center of the bar
+            value,  # Y-coordinate (height of the bar)
+            f"{value:.2f}",  # Value formatted to 2 decimal places
+            ha="center",  # Horizontal alignment
+            va="bottom",  # Vertical alignment
+            fontsize=9,  # Font size
+            color="black",  # Text color
+        )
+    
+    # Add title and labels
+    ax.set_title('Total Task Clock Time by Solver')
+    ax.set_xlabel('Solver')
+    ax.set_ylabel('Total Task Clock Time (u)')
+
+    # Rotate x-axis labels for better readability
+    ax.set_xticklabels(ax.get_xticklabels(), ha='right')
+
+    # Adjust layout
+    plt.tight_layout()
+
+    return fig
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Print and/or visualize stats gathered by the dataparser")
