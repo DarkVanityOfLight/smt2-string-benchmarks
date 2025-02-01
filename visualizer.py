@@ -272,11 +272,16 @@ if __name__ == "__main__":
     parser.add_argument("--tags", type=str, help="Path to the parsed tags")
     parser.add_argument("--having", nargs='+', type=str, help="Filter results having either tag")
     parser.add_argument("--exact", nargs='+', type=str, help="Filter results having exact tags")
+    parser.add_argument("--clean", type=int, help="Cut of the first n folders from the problem column in data")
     args = parser.parse_args()
 
     matplotlib.use(args.mpl)
 
     df = pd.read_csv(args.path)
+
+    if args.clean:
+        import dataparser
+        df = dataparser.clean_df(df, args.clean, False)
 
     if args.tags:
         import tag_util
