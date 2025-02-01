@@ -321,9 +321,10 @@ if __name__ == "__main__":
     if args.scatter:
         figures.append(scatter(df))
 
-    print("[+] Showing graphs")
-    plt.show()
+    if len(figures) > 0:
+        print("[+] Showing graphs")
+        plt.show()
 
-    if args.save_graphs:
-        for i, fig in enumerate(figures):
-            fig.savefig(f"plot_{i}.png")
+        if args.save_graphs:
+            for i, fig in enumerate(figures):
+                fig.savefig(f"plot_{i}.png")
