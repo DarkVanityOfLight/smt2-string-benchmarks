@@ -292,8 +292,10 @@ if __name__ == "__main__":
 
     # Filter df by tags
     if (args.having):
+        print("[+] Filtering by tags")
         df = tag_util.find_having_tags(df, tags, set(args.having))
     elif (args.exact):
+        print("[+] Filtering by tags")
         df = tag_util.find_exact_tagset(df, tags, set(args.exact))
 
     if args.table:
