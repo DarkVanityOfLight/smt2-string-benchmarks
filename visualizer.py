@@ -278,12 +278,17 @@ if __name__ == "__main__":
 
     df = pd.read_csv(args.path)
 
+    if args.tags:
+        import tag_util
+
     # Ensure we have tags when working with tags
     if (args.having or args.exact) and not args.tags:
         print("If you want to filter by tags please provide parsed tags via the --tags flag")
+        sys.exit(1)
 
     if (args.having and args.exact):
         print("You cannot use --having and --exact at the same time")
+        sys.exit(1)
 
     tags = None
     # Read tags
