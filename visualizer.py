@@ -87,12 +87,28 @@ def scatter(df):
 
 
 def summary_table(df):
+    # Create a copy to avoid modifying the original DataFrame
+    df = df.copy()
+
+    # Create an error indicator:
+    # It's True if either:
+    #   - status is "Error", OR
+    #   - sanity_sat is not "sat" or "unsat"
+    # But we exclude any rows where status is "Timeout"
+    df['error_indicator'] = (((df['status'] == 'Error') | (~df['sanity_sat'].isin(['sat', 'unsat'])))
+                             & (df['status'] != 'Timeout'))
+
+    # Now aggregate by solver
     result = df.groupby('solver').agg(
-        success_count=('status', lambda x: (x == 'Success').sum()),
+        total_problems=('solver', 'count'),
         timeout_count=('status', lambda x: (x == 'Timeout').sum()),
-        error_count=('status', lambda x: (x == "Error").sum()),
+        error_count=('error_indicator', 'sum'),
+        solved_count=('sanity_sat', lambda x: x.isin(['sat', 'unsat']).sum()),
+        sat_count=('sanity_sat', lambda x: (x == 'sat').sum()),
+        unsat_count=('sanity_sat', lambda x: (x == 'unsat').sum()),
         total_task_clock=('task-clock:u', 'sum')
     ).reset_index()
+
     return result
 
 
