@@ -4,6 +4,8 @@ import seaborn as sns
 from matplotlib.colors import LogNorm
 import argparse
 
+import tag_util
+
 import matplotlib
 
 
@@ -266,11 +268,33 @@ if __name__ == "__main__":
     parser.add_argument("--scatter", action="store_true", help="Enable scatter chart visualization")
     parser.add_argument("--table", action="store_true", help="Enable a summary table visualization")
     parser.add_argument("--mpl", type=str, default="qtagg", help="The matplotlib backend to use, default is qtagg")
-    parser.add_argument("--save_graphs", action="store_true", help="If the generated plots are to be saved")
+    parser.add_argument("--save-graphs", action="store_true", help="If the generated plots are to be saved")
+    parser.add_argument("--tags", type=str, help="Path to the parsed tags")
+    parser.add_argument("--having", nargs='+', type=str, help="Filter results having either tag")
+    parser.add_argument("--exact", nargs='+', type=str, help="Filter results having exact tags")
     args = parser.parse_args()
 
-    df = pd.read_csv(args.path)
     matplotlib.use(args.mpl)
+
+    df = pd.read_csv(args.path)
+
+    # Ensure we have tags when working with tags
+    if (args.having or args.exact) and not args.tags:
+        print("If you want to filter by tags please provide parsed tags via the --tags flag")
+
+    if (args.having and args.exact):
+        print("You cannot use --having and --exact at the same time")
+
+    tags = None
+    # Read tags
+    if args.tags:
+        tags = pd.read_csv(args.tags)
+
+    # Filter df by tags
+    if (args.having):
+        df = tag_util.find_having_tags(df, tags, args.having)
+    elif (args.exact):
+        df = tag_util.find_exact_tagset(df, tags, args.exact)
 
     if args.table:
         print(summary_table(df))
