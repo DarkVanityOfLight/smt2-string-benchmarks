@@ -127,24 +127,25 @@ def cactus_plot(df):
 
     return fig
 
+
 def sum_time_barchart(data_frame, ax=None):
     total_problems = data_frame["problem"].nunique()
-    
+
     # Group the data by 'solver' and calculate the sum of 'task-clock:u'
     summed_data = data_frame.groupby('solver')['task-clock:u'].sum().sort_values(ascending=False)
-    
+
     # Calculate the number of problems solved per solver
     problems_solved = data_frame[data_frame["status"] == "Success"].groupby('solver').size()
-    
+
     # Calculate the average time per problem for each solver
     avg_time_per_problem = summed_data / problems_solved
-    
+
     # Create the bar chart on the provided axis
     if ax is None:
         fig, ax = plt.subplots(figsize=(10, 6))  # Fallback to standalone figure if no axis is provided
     else:
         fig = None  # No standalone figure when using subplots
-    
+
     bars = summed_data.plot(kind='bar', color='skyblue', ax=ax)
 
     ax.set_yscale("log")
@@ -195,6 +196,53 @@ def sum_time_barchart(data_frame, ax=None):
     # Add global problem count as a label at the top of the axis
     ax.text(
         0.5, 0.9,  # Position at the top center (relative coordinates)
+        f"Total Problems: {total_problems}",
+        ha="center",
+        va="bottom",
+        fontsize=8,
+        color="gray",
+        transform=ax.transAxes,
+    )
+
+    # Adjust layout if it's a standalone figure
+    if fig:
+        plt.tight_layout()
+
+    return fig
+
+
+def solved_barchart(data_frame, ax=None):
+    # Filter rows where status is "Success"
+    solved_df = data_frame[data_frame['status'] == 'Success']
+    solved_df = solved_df[solved_df["sanity_sat"].isin(["sat", "unsat"])]  # Only accept sat or unsat as answer, some solvers might answer "unknown" or some error
+
+    # Group by 'solver' and 'sanity_sat' and count the number of successes
+    sanity_counts = solved_df.groupby(['solver', 'sanity_sat']).size().unstack(fill_value=0)
+
+    # Calculate the total number of problems
+    total_problems = data_frame["problem"].nunique()
+
+    # Create a figure and axis if not provided
+    if ax is None:
+        fig, ax = plt.subplots(figsize=(10, 6))
+    else:
+        fig = None  # No standalone figure when using subplots
+
+    color_map = {'sat': 'green', 'unsat': 'orange'}
+    colors = [color_map.get(col, 'blue') for col in sanity_counts.columns]
+
+    # Plot the stacked bar chart with the list of colors
+    sanity_counts.plot(kind='bar', stacked=True, ax=ax, color=colors)
+
+    # Add a horizontal line for the total number of problems
+    ax.axhline(y=total_problems, color='red', linestyle='--', linewidth=1.5, label='Total Problems')
+
+    # Customize the plot
+    ax.set_xlabel('Solver')
+    ax.set_ylabel('Number of Problems Solved')
+
+    ax.text(
+        0.5, 0.96,  # Position at the top center (relative coordinates)
         f"Total Problems: {total_problems}",
         ha="center",
         va="bottom",
