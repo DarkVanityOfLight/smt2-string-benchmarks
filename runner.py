@@ -1,9 +1,9 @@
 import subprocess
 import os
 import threading
-from typing import List
-from typing import Iterator
+from typing import List, Iterator, cast
 import argparse
+import json
 
 solvers = {
     "cvc5": ["/home/lichtner/cvc5", "--tlimit", "60000"],
@@ -40,6 +40,14 @@ class LazyPathIterator:
                     yield os.path.join(root, f)
 
 
+def read_config() -> dict:
+
+    with open("config.json", "r") as config_file:
+        config = json.load(config_file)
+
+        return config
+
+
 def benchmark_solver(solver_name: str, solver_command: List[str], input_file: str):
     """
     Runs a benchmark on a single file with a single solver
@@ -68,17 +76,37 @@ def benchmark_solver(solver_name: str, solver_command: List[str], input_file: st
         print(f"Error writing to output file {output}: {e}")
 
 
-def worker(solver_name: str, pool: LazyPathIterator):
+def worker(solver: tuple[str, list[str]], pool: LazyPathIterator):
     for f in pool:
         try:
-            benchmark_solver(solver_name, solvers[solver_name], f)
+            benchmark_solver(solver[0], solver[1], f)
         except Exception as e:
             print(f"Some Exception occured: {e}")
 
 
-def run(args):
-    solvers = args.solvers
-    pools = [LazyPathIterator(args.path, args.skip) for _ in solvers]
+def run(args) -> None:
+    solvers_to_run: list[str] = args.solvers
+    solver_dict = read_config()
+    cast(dict[str, List[str]], solver_dict)
+
+    # Make sure we have a config for all specified solvers
+    if not args.solvers[0] == "all":  # All just runs all from the config
+        for solver in solvers_to_run:
+            if solver not in solver_dict.keys():
+                print(f"Solver {solver} was specified as argument but does not exist in the config")
+                return
+
+    selected_solvers = None
+    if solvers_to_run[0] == "all":
+        selected_solvers = solver_dict.items()
+    else:
+        selected_solvers = [(name, solver) for name, solver in solver_dict.items() if name in solvers_to_run]  # type: ignore
+
+    if not selected_solvers:
+        print("No solver was selected")
+        return
+
+    pools = [LazyPathIterator(args.path, args.skip) for _ in selected_solvers]
 
     threads = []
     for solver, pool in zip(solvers, pools):
@@ -97,8 +125,8 @@ if __name__ == "__main__":
     parser.add_argument("--solvers",
                         type=str,
                         nargs="+",
-                        default=["ostrich", "z3alpha", "z3noodler", "cvc5", "z3"],
-                        help="A list of string solvers to run the benchmark with, available solvers are: ostrich, z3alpha, z3noodler, cvc5, z3")
+                        default=["all"],
+                        help="Define which solvers to run from your config.json")
     parser.add_argument("path", type=str, help="Path to the directory containing the benchmarks")
     args = parser.parse_args()
 
