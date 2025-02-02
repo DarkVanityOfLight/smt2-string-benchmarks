@@ -60,7 +60,7 @@ The dataparser requires pandas.
 The visualizer requires pandas and matplotlib and seaborn.
 Additionally make sure you have a compatible backend for matplotlib installed.
 
-#### Tag tag_util
+#### tag_util
 The only non-system dependency is pandas.
 
 
