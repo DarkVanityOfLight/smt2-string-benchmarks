@@ -2,11 +2,10 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 from matplotlib.colors import LogNorm
-import argparse
-
-import tag_util
-
 import matplotlib
+
+import argparse
+import sys
 
 
 def count_timeouts(df):
