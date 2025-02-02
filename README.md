@@ -85,7 +85,7 @@ The generall procces of benchmarking would look something like this:
 > The config file follows a simple format of solver_name: ["solver", "arguments"]
 > Solver names should not contain _ since, they are used later in the dataparser as special character
 > For example:
-> ```json
+```json
 {
     "cvc5": ["/home/lichtner/cvc5", "--tlimit", "60000"],
     "ostrich": ["/home/lichtner/ostrich/ostrich", "-logo", "-runtime", "+quiet", "-timeout=60000"],
