@@ -1,17 +1,9 @@
 import subprocess
 import os
 import threading
-from typing import List, Iterator, cast
+from typing import List, Iterator, cast, Tuple, Dict
 import argparse
 import json
-
-solvers = {
-    "cvc5": ["/home/lichtner/cvc5", "--tlimit", "60000"],
-    "ostrich": ["/home/lichtner/ostrich/ostrich", "-logo", "-runtime", "+quiet", "-timeout=60000"],
-    "z3alpha": ["/software/python/3.12.0/bin/python3.12", "/home/lichtner/z3alpha/smtcomp24/z3alpha.py", "-T:60"],
-    "z3noodler": ["/home/lichtner/z3-noodler", "-T:60"],
-    "z3": ["/home/lichtner/.local/bin/z3", "-T:60"]
-}
 
 OUTPUT_DIR = "out"
 seperator = ","
@@ -76,7 +68,7 @@ def benchmark_solver(solver_name: str, solver_command: List[str], input_file: st
         print(f"Error writing to output file {output}: {e}")
 
 
-def worker(solver: tuple[str, list[str]], pool: LazyPathIterator):
+def worker(solver: Tuple[str, List[str]], pool: LazyPathIterator):
     for f in pool:
         try:
             benchmark_solver(solver[0], solver[1], f)
@@ -87,7 +79,7 @@ def worker(solver: tuple[str, list[str]], pool: LazyPathIterator):
 def run(args) -> None:
     solvers_to_run: list[str] = args.solvers
     solver_dict = read_config()
-    cast(dict[str, List[str]], solver_dict)
+    cast(Dict[str, List[str]], solver_dict)
 
     # Make sure we have a config for all specified solvers
     if not args.solvers[0] == "all":  # All just runs all from the config
@@ -109,8 +101,9 @@ def run(args) -> None:
     pools = [LazyPathIterator(args.path, args.skip) for _ in selected_solvers]
 
     threads = []
-    for solver, pool in zip(solvers, pools):
-        threads.append(threading.Thread(target=worker, args=(solver, pool)))
+    for (name, command), pool in zip(selected_solvers, pools):
+        print(f"[+] Starting solver {name}")
+        threads.append(threading.Thread(target=worker, args=((name, command), pool)))
 
     for thread in threads:
         thread.start()
