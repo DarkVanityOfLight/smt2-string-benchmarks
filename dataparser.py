@@ -27,8 +27,11 @@ def parse_file(path: str):
             content = f.readlines()
             stripped_content = clean_lines(content)
 
+            if len(stripped_content) == 0:
+                return (2, "Error")
+
             # First is a hard timeout by the script, the others indicate a clean timeout by the parser
-            if TIMEOUT_STRING in stripped_content[0] or TIMEOUT_STRING in stripped_content[1] or CVC5_TIMEOUT_STRING in stripped_content[1] or OSTRICH_TIMEOUT_STRING in stripped_content[1]:
+            if TIMEOUT_STRING in stripped_content[0] or ( len(stripped_content) > 1 and (TIMEOUT_STRING in stripped_content[1] or CVC5_TIMEOUT_STRING in stripped_content[1] or OSTRICH_TIMEOUT_STRING in stripped_content[1])):
                 return (1, Timeout)
 
             exit_code = int(stripped_content[0])
@@ -78,8 +81,8 @@ def parse_files(files):
     for i, file in enumerate(files):
         filled_blocks = int((i + 1) / len(files) * 10)  # 10 blocks in the bar
         progress_bar = f"[{'■' * filled_blocks}{'□' * (10 - filled_blocks)}] {((i + 1) / len(files)) * 100:.1f}%"
-        sys.stdout.write(f"\r{progress_bar}")
-        sys.stdout.flush()
+        #sys.stdout.write(f"\r{progress_bar}")
+        #sys.stdout.flush()
 
         parsed = parse_file(file)
         if not parsed:
