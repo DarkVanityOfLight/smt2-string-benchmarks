@@ -243,11 +243,12 @@ def clean_df(df, cut=2, remove_filetype=True, column="problem"):
     return df
 
 
-def parse_data(path: str):
-    files = [str(file) for file in Path(path).rglob("*.out")]
+def parse_data(args):
+    files = [str(file) for file in Path(args.path).rglob("*.out")]
     df = parse_files(files)
+    cleaned = clean_df(df, cut=args.cut, remove_filetype=args.remove_filetype)
 
-    return df
+    return cleaned
 
 
 def parse_tags(args):
@@ -274,7 +275,7 @@ if __name__ == "__main__":
 
     df = None
     if args.mode == "data":
-        df = parse_data(args.path)
+        df = parse_data(args)
     else:
         df = parse_tags(args)
 
