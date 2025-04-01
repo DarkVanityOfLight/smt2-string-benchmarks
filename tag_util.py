@@ -7,7 +7,7 @@ import argparse
 
 def find_having_tags(df, TAGS, tagset):
     """
-    Filter the DataFrame `df` to include only those problems that have all the tags specified in `tagset`.
+    Filter the DataFrame `df` to include only those problems that have a superset off the tags specified in `tagset`.
 
     Parameters:
     - df (DataFrame): The main DataFrame containing problem data. It is assumed that it has a column named 'problem'.
@@ -24,7 +24,7 @@ def find_having_tags(df, TAGS, tagset):
     problems_with_both_tags = (
         filtered_tags.groupby("problem")["tags"]
         .apply(set)  # Get unique tags for each problem
-        .apply(lambda t: tagset.issubset(t))  # Check if both tags are present
+        .apply(lambda t: tagset.issubset(t))
     )
 
     # Get problems that satisfy the condition
