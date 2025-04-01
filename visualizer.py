@@ -293,21 +293,17 @@ if __name__ == "__main__":
     parser.add_argument("--cactus", action="store_true", help="Enable cactus chart visualization")
     parser.add_argument("--scatter", action="store_true", help="Enable scatter chart visualization")
     parser.add_argument("--table", action="store_true", help="Enable a summary table visualization")
+    parser.add_argument("--solved", action="store_true", help="Enable a barchart showing solved sat/unsat instances per solver")
     parser.add_argument("--mpl", type=str, default="qtagg", help="The matplotlib backend to use, default is qtagg")
     parser.add_argument("--save-graphs", action="store_true", help="If the generated plots are to be saved")
     parser.add_argument("--tags", type=str, help="Path to the parsed tags")
     parser.add_argument("--having", nargs='+', type=str, help="Filter results having either tag")
     parser.add_argument("--exact", nargs='+', type=str, help="Filter results having exact tags")
-    parser.add_argument("--clean", type=int, help="Cut of the first n folders from the problem column in data")
     args = parser.parse_args()
 
     matplotlib.use(args.mpl)
 
     df = pd.read_csv(args.path)
-
-    if args.clean:
-        import dataparser
-        df = dataparser.clean_df(df, args.clean, False)
 
     if args.tags:
         import tag_util
@@ -334,6 +330,10 @@ if __name__ == "__main__":
         print("[+] Filtering by tags")
         df = tag_util.find_exact_tagset(df, tags, set(args.exact))
 
+    if df.empty:
+        print("[+] The selected dataframe is empty!")
+        sys.exit(-1)
+
     if args.table:
         print(summary_table(df))
 
@@ -346,6 +346,9 @@ if __name__ == "__main__":
 
     if args.scatter:
         figures.append(scatter(df))
+
+    if args.solved:
+        figures.append(solved_barchart(df))
 
     if len(figures) > 0:
         print("[+] Showing graphs")
